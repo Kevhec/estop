@@ -1,0 +1,10 @@
+{
+  "home": {
+    "new-game": "New Game",
+    "room-code": "Room Code"
+  },
+  "settings": {
+    "label": "Settings",
+    "language": "Language"
+  }
+}

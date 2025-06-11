@@ -1,0 +1,11 @@
+@import 'tailwindcss';
+@import '@estop/tailwind-config';
+@import '@estop/ui/styles.css';
+
+@font-face {
+  font-family: 'Quicksand';
+  src: url('/fonts/quicksand.ttf') format('truetype');
+  font-weight: 300 700;
+  font-style: normal;
+  font-display: swap;
+}

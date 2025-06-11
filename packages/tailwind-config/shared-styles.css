@@ -1,0 +1,38 @@
+@import "tailwindcss";
+
+@theme inline {
+  --color-background: var(--background);
+  --color-primary: var(--navy-deep);
+  --font-quicksand: var(--quicksand);
+  --animate-full-rotation: full-rotation 60s linear infinite;
+  --shadow-cartoon: 0px 10px 0px 0px black;
+  --shadow-contracted: 0px 0px 0px 0px black;
+}
+
+:root {
+  --background: oklch(0.7806 0.1269 57.86);
+  --navy-deep: oklch(0.3753 0.0438 226.2);
+  --teal: oklch(0.6304 0.1013 183.03);
+  --sand-yellow: rgb(233, 196, 106);
+  --orange-soft: oklch(0.7806 0.1269 57.86);
+  --coral: oklch(0.6783 0.1559 35.18);
+  --quicksand: "Quicksand", sans-serif;
+}
+
+@layer components {
+  .cartoon-container {
+    border: 5px solid black;
+    border-radius: 16px;
+    padding: 8px 16px;
+    box-shadow: var(--shadow-cartoon);
+  }
+
+  .cartoon-button:active {
+    box-shadow: var(--shadow-contracted);
+  }
+}
+
+@keyframes full-rotation {
+  0% { transform: rotate(0); }
+  100% { transform: rotate(360deg); }
+}

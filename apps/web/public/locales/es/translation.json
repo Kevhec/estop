@@ -1,0 +1,10 @@
+{
+  "home": {
+    "new-game": "Nuevo Juego",
+    "room-code": "Código de sala"
+  },
+  "settings": {
+    "label": "Configuración",
+    "language": "Idioma"
+  }
+}
