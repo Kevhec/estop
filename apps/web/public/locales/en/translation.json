@@ -5,6 +5,7 @@
   },
   "settings": {
     "label": "Settings",
-    "language": "Language"
+    "language": "Language",
+    "language-placeholder": "Language"
   }
 }

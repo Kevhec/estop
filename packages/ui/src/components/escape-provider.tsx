@@ -16,8 +16,6 @@ export const EscapeProvider = ({ children }: { children: React.ReactNode }) => {
         if (top) {
           const handled = top();
           if (handled) {
-            console.log(handlers.current)
-            handlers.current = handlers.current.filter((h) => h !== top)
             e.stopPropagation()
           };
         }

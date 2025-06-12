@@ -55,7 +55,7 @@ function Content({ className, children, ...props }: ContentProps) {
       hasInteractedRef.current = false;
       const timeout = setTimeout(() => {
         hasInteractedRef.current = true;
-      }, 100);
+      }, 0);
 
       return () => clearTimeout(timeout);
     }
@@ -90,6 +90,7 @@ function Content({ className, children, ...props }: ContentProps) {
           opacity: open ? 1 : 0,
           scale: open ? 1 : 0
       }}
+      onClose={(e) => e.preventDefault()}
       /* {...props} */
     >
       <div ref={dialogContainerRef} className={containerClasses}>
@@ -103,6 +104,7 @@ export function Dialog({ children }: RootProps) {
   const [open, setOpen] = useState(false);
 
   const onOpenChange = useCallback((open: boolean) => {
+    console.log({ open })
     setOpen(open)
   }, [])
 

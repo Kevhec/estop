@@ -10,10 +10,12 @@ export default function LanguageSelect() {
         <Typography variant='span'>{t('settings.language')}</Typography>
       </Label>
       <Select>
-        <Select.Trigger id='language-select' className='p-0 py-1 bg-white text-black'>Select</Select.Trigger>
+        <Select.Trigger id='language-select' className='p-0 py-1 bg-white text-black'>
+          <Select.Value placeholder={t('settings.language-placeholder')} />
+        </Select.Trigger>
         <Select.Content>
-          <Select.Option index={0} value={'es'}>Español</Select.Option>
-          <Select.Option index={1} value={'en'}>English</Select.Option>
+          <Select.Option value={'es'}>Español</Select.Option>
+          <Select.Option value={'en'}>English</Select.Option>
         </Select.Content>
       </Select>
     </div>
