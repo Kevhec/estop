@@ -12,9 +12,9 @@ const SelectContext = createContext<SelectContextType>({
   selectedValue: null,
   selectedContent: null,
   selectedIndex: 0,
-  onIndexChange: () => null,
-  onOpenChange: () => null,
-  onValueChange: () => null
+  handleIndex: () => null,
+  handleOpen: () => null,
+  handleValue: () => null
 })
 
 // Available control keys for the select component
@@ -26,12 +26,12 @@ enum ControlKeys {
 }
 
 function Trigger({ className, children, ...props }: ButtonProps) {
-  const { open, contentId, selectedContent, selectedIndex, onOpenChange } = useContext(SelectContext);
-  const classes = cn('p-2 select-none', className);
+  const { open, contentId, selectedContent, selectedIndex, handleOpen } = useContext(SelectContext);
+  const classes = cn('p-2 select-none flex justify-center items-center', className);
   const triggerRef = useRef<HTMLButtonElement | null>(null)
 
-  const handleOpen = () => {
-    onOpenChange(!open);
+  const handleClick = () => {
+    handleOpen(!open);
   }
 
   useEffect(() => {
@@ -45,7 +45,7 @@ function Trigger({ className, children, ...props }: ButtonProps) {
         !open &&
         (keyPressed === ControlKeys.UP || keyPressed === ControlKeys.DOWN)
       ) {
-        onOpenChange(true)
+        handleOpen(true)
       }
     }
 
@@ -65,7 +65,7 @@ function Trigger({ className, children, ...props }: ButtonProps) {
       ref={triggerRef}
       type='button'
       className={classes}
-      onClick={handleOpen}
+      onClick={handleClick}
       tabIndex={0}
       role='combobox'
       aria-controls={contentId}
@@ -91,8 +91,8 @@ function Content({ children }: ContentProps) {
     open,
     contentId,
     selectedIndex,
-    onIndexChange,
-    onOpenChange
+    handleIndex,
+    handleOpen
   } = useContext(SelectContext);
   const [contentHeight, setContentHeight] = useState(0);
   const containerRef = useRef<HTMLDivElement | null>(null);
@@ -127,7 +127,7 @@ function Content({ children }: ContentProps) {
 
   useClickOutside(containerRef, () => {
     if (open && hasInteractedRef.current) {
-      onOpenChange(false)
+      handleOpen(false)
     }
   })
 
@@ -144,16 +144,16 @@ function Content({ children }: ContentProps) {
         // Navigation with loop, if moving up on first option then last one is selected
         case ControlKeys.UP:
           if (selectedIndex > 0) {
-            onIndexChange(selectedIndex - 1)
+            handleIndex(selectedIndex - 1)
           } else {
-            onIndexChange(lastIndex)
+            handleIndex(lastIndex)
           }
           break
         case ControlKeys.DOWN:
           if (selectedIndex < lastIndex) {
-            onIndexChange(selectedIndex + 1)
+            handleIndex(selectedIndex + 1)
           } else {
-            onIndexChange(0)
+            handleIndex(0)
           }
           break
       }
@@ -163,7 +163,7 @@ function Content({ children }: ContentProps) {
     return () => {
       container.removeEventListener('keydown', handleNavigation);
     }
-  }, [selectedIndex, onIndexChange])
+  }, [selectedIndex, handleIndex])
 
   // Manually calculate height for dropdown opening animation
   useEffect(() => {
@@ -198,7 +198,7 @@ function Content({ children }: ContentProps) {
 }
 
 function Option({ value, index, children }: OptionProps) {
-  const { open, selectedValue, selectedIndex, onIndexChange, onValueChange } = useContext(SelectContext);
+  const { open, selectedValue, selectedContent, selectedIndex, handleIndex, handleValue } = useContext(SelectContext);
   const optionRef = useRef<HTMLLIElement | null>(null);
   const isSelected = selectedValue === value;
   const isFocused = selectedIndex === index;
@@ -211,7 +211,7 @@ function Option({ value, index, children }: OptionProps) {
   useEffect(() => {
     const option = optionRef.current;
 
-    if (option && open && (isFocused || isSelected)) {
+    if (option && open && (isFocused)) {
       option.focus()
       option.scrollIntoView({
         block: 'nearest'
@@ -224,16 +224,20 @@ function Option({ value, index, children }: OptionProps) {
     if (!option) return
 
     const selectOption = () => {
-      onIndexChange(index || 0)
-      if (!isSelected) {
-        onValueChange(value, children)
-      }
+      handleIndex(index || 0)
+      handleValue(value, children)
+    }
+
+    if (selectedValue === value && !selectedContent) {
+      selectOption()
     }
 
     const handleKeyboard = (evt: KeyboardEvent) => {
       evt.preventDefault();
       const keyPressed = evt.key;
-      if (keyPressed === ControlKeys.ENTER || keyPressed === ControlKeys.SPACE) {
+      if (
+        keyPressed === ControlKeys.ENTER || keyPressed === ControlKeys.SPACE
+      ) {
         selectOption();
       }
     }
@@ -244,7 +248,7 @@ function Option({ value, index, children }: OptionProps) {
       option.removeEventListener('click', selectOption);
       option.removeEventListener('keydown', handleKeyboard);
     }
-  }, [selectedValue, onValueChange])
+  }, [selectedValue, handleValue, handleIndex])
 
   return (
     <li
@@ -262,30 +266,42 @@ function Option({ value, index, children }: OptionProps) {
   )
 }
 
-export function Select({ name, className, children }: RootProps) {
+export function Select({
+  name,
+  defaultValue = null,
+  className,
+  children,
+  onValueChange,
+}: RootProps) {
   const [open, setOpen] = useState(false);
-  const [selectedValue, setSelectedValue] = useState<string | null>(null)
+  const [selectedValue, setSelectedValue] = useState<string | null>(defaultValue);
   const [selectedContent, setSelectedContent] = useState<React.ReactNode | null>(null);
   const [shouldAnnounce, setShouldAnnounce] = useState(true);
   const [selectedIndex, setSelectedIndex] = useState(0);
   const contentId = useId();
   const containerClasses = cn('relative', className);
 
-  const onIndexChange = useCallback((index: number) => {
+  const handleIndex = useCallback((index: number) => {
     setSelectedIndex(index);
   }, [])
 
-  const onOpenChange = useCallback((open: boolean) => {
+  const handleOpen = useCallback((open: boolean) => {
     setOpen(open);
   }, [])
 
-  const onValueChange = useCallback((value: string, content: React.ReactNode) => {
+  const handleValue = useCallback((value: string, content: React.ReactNode) => {
     setSelectedValue(value);
     setSelectedContent(content);
-    onOpenChange(false);
+    handleOpen(false);
   }, [])
 
   useEffect(() => {
+    // Call onValueChange event handler whenever value changes
+    if (onValueChange && selectedValue) {
+      onValueChange(selectedValue);
+    }
+
+    // Announce new value to sr
     setShouldAnnounce(true);
 
     const timeoutId = setTimeout(() => {
@@ -296,7 +312,7 @@ export function Select({ name, className, children }: RootProps) {
   }, [selectedValue])
 
   useEscape(() => {
-    onOpenChange(false);
+    handleOpen(false);
     return true
   }, open)
 
@@ -306,18 +322,18 @@ export function Select({ name, className, children }: RootProps) {
     selectedValue,
     selectedContent,
     selectedIndex,
-    onIndexChange,
-    onOpenChange,
-    onValueChange
+    handleIndex,
+    handleOpen,
+    handleValue
   }), [
     open,
     contentId,
     selectedValue,
     selectedContent,
     selectedIndex,
-    onIndexChange,
-    onOpenChange,
-    onValueChange
+    handleIndex,
+    handleOpen,
+    handleValue
   ])
 
   return (

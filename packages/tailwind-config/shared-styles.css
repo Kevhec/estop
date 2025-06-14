@@ -24,7 +24,10 @@
     border: 5px solid black;
     border-radius: 16px;
     padding: 8px 16px;
-    box-shadow: var(--shadow-cartoon);
+    box-shadow:
+      var(--shadow-cartoon),
+      0px 4px 0px 0px black,
+      0px 6px 0px 0px black;
   }
 
   .cartoon-button:active {

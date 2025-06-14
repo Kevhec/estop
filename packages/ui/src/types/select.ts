@@ -1,4 +1,4 @@
-import React, { PropsWithChildren, RefObject } from 'react';
+import React, { PropsWithChildren } from 'react';
 
 export interface SelectContextType {
   open: boolean;
@@ -6,13 +6,16 @@ export interface SelectContextType {
   selectedValue: string | null;
   selectedContent: React.ReactNode | null;
   selectedIndex: number;
-  onIndexChange: (index: number) => void;
-  onOpenChange: (open: boolean) => void;
-  onValueChange: (value: string, content: React.ReactNode) => void;
+  handleIndex: (index: number) => void;
+  handleOpen: (open: boolean) => void;
+  handleValue: (value: string, content: React.ReactNode) => void;
 }
 
 export interface RootProps extends PropsWithChildren {
   className?: string
+  name?: string
+  defaultValue?: string | null
+  onValueChange?: (value: string) => void;
 }
 
 export type ContentProps = PropsWithChildren
