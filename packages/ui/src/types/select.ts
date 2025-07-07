@@ -18,7 +18,7 @@ export interface RootProps extends PropsWithChildren {
   onValueChange?: (value: string) => void;
 }
 
-export type ContentProps = PropsWithChildren
+export type ContentProps = PropsWithChildren;
 
 export interface OptionProps extends PropsWithChildren {
   value: string

@@ -7,5 +7,14 @@
     "label": "Configuración",
     "language": "Idioma",
     "language-placeholder": "Idioma"
+  },
+  "player-info": {
+    "username": "Nombre",
+    "title": "¡Personalízate!",
+    "continue": "Continuar",
+    "goBack": "Volver"
+  },
+  "create-room": {
+    "title": "Crear sala"
   }
 }

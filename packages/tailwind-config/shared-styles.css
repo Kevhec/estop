@@ -2,6 +2,8 @@
 
 @theme inline {
   --color-background: var(--background);
+  --color-teal: var(--teal);
+  --color-coral: var(--coral);
   --color-primary: var(--navy-deep);
   --font-quicksand: var(--quicksand);
   --animate-full-rotation: full-rotation 60s linear infinite;

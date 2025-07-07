@@ -20,7 +20,7 @@ i18n
       convertDetectedLanguage: (lng: string) => {
         const [lang] = lng.split('-');
         return lang;
-      }
+      },
     },
   });
 

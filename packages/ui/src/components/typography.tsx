@@ -1,6 +1,6 @@
 import { cva } from 'class-variance-authority';
 import { cn } from '../utils/general';
-import { TypographyElementProps } from '../types/typography';
+import type { TypographyElementProps } from '../types/typography';
 
 export const typographyVariants = cva(
   '',
@@ -27,6 +27,7 @@ export function Typography <T extends React.ElementType = 'p'>({
   const classes = cn(typographyVariants({ variant, className }));
 
   return (
+    // eslint-disable-next-line react/jsx-props-no-spreading
     <Component className={classes} {...restProps}>
       {children}
     </Component>

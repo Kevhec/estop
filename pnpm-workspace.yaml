@@ -1,8 +1,12 @@
 packages:
   - apps/*
   - packages/*
+
 onlyBuiltDependencies:
   - '@nestjs/core'
   - '@parcel/watcher'
   - '@swc/core'
+  - '@tailwindcss/oxide'
+  - core-js-pure
   - esbuild
+  - unrs-resolver

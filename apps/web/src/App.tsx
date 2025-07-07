@@ -1,10 +1,9 @@
-import { BrowserRouter, Route, Routes } from "react-router";
+import { BrowserRouter, Route, Routes } from 'react-router';
+import { UiContext } from '@estop/ui';
 import MainLayout from './layouts/MainLayout';
 import Home from './routes/public/Home';
-import { UiContext } from '@estop/ui';
 
 function App() {
-
   return (
     <UiContext>
       <BrowserRouter>
@@ -15,7 +14,7 @@ function App() {
         </Routes>
       </BrowserRouter>
     </UiContext>
-  )
+  );
 }
 
-export default App
+export default App;

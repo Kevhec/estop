@@ -1,0 +1,6 @@
+const MAX_DIGITS = 4;
+const MAX_COMBINATIONS = Math.pow(36, MAX_DIGITS)
+
+export {
+  MAX_COMBINATIONS
+}

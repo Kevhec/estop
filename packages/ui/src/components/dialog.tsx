@@ -1,17 +1,19 @@
-import { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState } from 'react';
+import {
+  createContext, useCallback, useContext, useEffect, useMemo, useRef, useState,
+} from 'react';
+import { motion } from 'motion/react';
 import type { ContentProps, DialogContextType, RootProps } from '../types/dialog';
 import { cn } from '../utils/general';
-import { Button } from './button';
+import Button from './button';
 import { TypographyElementProps } from '../types/typography';
 import { Typography } from './typography';
 import { Portal } from './portal';
 import { ButtonProps } from '../types/common';
 import { useEscape } from './escape-provider';
 import useClickOutside from '../hooks/useClickOutside';
-import { AnimatePresence, motion } from "motion/react"
 import usePreventCancel from '../hooks/usePreventCancel';
 
-const MotionDialog = motion.create('dialog');
+/* const MotionDialog = motion.create('dialog'); */
 
 const DialogContext = createContext<DialogContextType>({
   open: false,
@@ -20,35 +22,35 @@ const DialogContext = createContext<DialogContextType>({
 
 function Trigger({ className, children, ...props }: ButtonProps) {
   const { open, onOpenChange } = useContext(DialogContext);
-  const classes = cn('p-2', className)
+  const classes = cn('p-2', className);
 
   return (
     <Button
-      type='button'
+      type="button"
       className={classes}
       onClick={() => onOpenChange(!open)}
       {...props}
     >
       {children}
     </Button>
-  )
+  );
 }
 
 function Title({ variant = 'h2', ...props }: TypographyElementProps<'h2'>) {
   return (
     <Typography variant={variant} {...props} />
-  )
+  );
 }
 
-function Content({ className, children, ...props }: ContentProps) {
+function Content({ className, children }: ContentProps) {
   const { open, onOpenChange } = useContext(DialogContext);
   const dialogRef = useRef<HTMLDialogElement | null>(null);
   const dialogContainerRef = useRef<HTMLDivElement | null>(null);
   const hasInteractedRef = useRef(false);
-  usePreventCancel(dialogRef)
+  usePreventCancel(dialogRef);
 
-  const dialogClasses = cn('bg-transparent text-white backdrop:bg-black/60 left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-4/5 overflow-visible')
-  const containerClasses = cn('cartoon-container bg-primary text-white backdrop:bg-black/60 h-full', className)
+  const dialogClasses = cn('bg-transparent text-white backdrop:bg-black/60 left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-4/5 overflow-visible');
+  const containerClasses = cn('cartoon-container bg-primary text-white backdrop:bg-black/60 h-full', className);
 
   useEffect(() => {
     if (open) {
@@ -59,13 +61,15 @@ function Content({ className, children, ...props }: ContentProps) {
 
       return () => clearTimeout(timeout);
     }
+
+    return () => undefined;
   }, [open]);
 
   useClickOutside(dialogContainerRef, () => {
     if (open && hasInteractedRef.current) {
-      onOpenChange(false)
+      onOpenChange(false);
     }
-  })
+  });
 
   useEffect(() => {
     const dialogElement = dialogRef.current;
@@ -77,7 +81,7 @@ function Content({ className, children, ...props }: ContentProps) {
     } else {
       dialogElement.close();
     }
-  }, [open])
+  }, [open]);
 
   return (
     <motion.dialog
@@ -85,10 +89,10 @@ function Content({ className, children, ...props }: ContentProps) {
       className={dialogClasses}
       initial={{ opacity: 0, scale: 0 }}
       exit={{ opacity: 0, scale: 0 }}
-      transition={{ duration: .2 }}
+      transition={{ duration: 0.2 }}
       animate={{
-          opacity: open ? 1 : 0,
-          scale: open ? 1 : 0
+        opacity: open ? 1 : 0,
+        scale: open ? 1 : 0,
       }}
       onClose={(e) => e.preventDefault()}
       /* {...props} */
@@ -97,33 +101,44 @@ function Content({ className, children, ...props }: ContentProps) {
         {children}
       </div>
     </motion.dialog>
-  )
+  );
 }
 
-export function Dialog({ children }: RootProps) {
-  const [open, setOpen] = useState(false);
+export default function Dialog({
+  children,
+  open: controlledOpen,
+  onOpenChange: controlledOnOpenChange,
+  defaultOpen = false,
+}: RootProps) {
+  const [internalOpen, setInternalOpen] = useState(defaultOpen);
 
-  const onOpenChange = useCallback((open: boolean) => {
-    console.log({ open })
-    setOpen(open)
-  }, [])
+  const isControlled = controlledOpen !== undefined;
+
+  const open = isControlled ? controlledOpen : internalOpen;
+
+  const onOpenChange = useCallback((newOpen: boolean) => {
+    if (isControlled) {
+      controlledOnOpenChange?.(newOpen);
+    } else {
+      setInternalOpen(newOpen);
+    }
+  }, [isControlled, controlledOnOpenChange]);
 
   const contextValue = useMemo(() => ({
     open,
     onOpenChange,
-  }), [open, onOpenChange])
+  }), [open, onOpenChange]);
 
   useEscape(() => {
-    let dialog;
-    setOpen(false);
-    return true
-  }, open)
+    onOpenChange(false);
+    return true;
+  }, open);
 
   return (
     <DialogContext.Provider value={contextValue}>
       {children}
     </DialogContext.Provider>
-  )
+  );
 }
 
 // Set child components as properties of root

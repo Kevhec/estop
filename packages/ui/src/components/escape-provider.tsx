@@ -1,12 +1,14 @@
-import React, { createContext, useContext, useEffect, useRef } from 'react';
+import React, {
+  createContext, useCallback, useContext, useEffect, useMemo, useRef,
+} from 'react';
 
 type Handler = () => boolean | void;
 
 const EscapeContext = createContext<{
-  register: (handler: Handler) => () => void;
+  register:(handler: Handler) => () => void;
 } | null>(null);
 
-export const EscapeProvider = ({ children }: { children: React.ReactNode }) => {
+export function EscapeProvider({ children }: { children: React.ReactNode }) {
   const handlers = useRef<Handler[]>([]);
 
   useEffect(() => {
@@ -16,8 +18,8 @@ export const EscapeProvider = ({ children }: { children: React.ReactNode }) => {
         if (top) {
           const handled = top();
           if (handled) {
-            e.stopPropagation()
-          };
+            e.stopPropagation();
+          }
         }
       }
     };
@@ -26,24 +28,28 @@ export const EscapeProvider = ({ children }: { children: React.ReactNode }) => {
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, []);
 
-  const register = (handler: Handler) => {
+  const register = useCallback((handler: Handler) => {
     handlers.current.push(handler);
     return () => {
       handlers.current = handlers.current.filter((h) => h !== handler);
     };
-  };
+  }, []);
+
+  const contextValue = useMemo(() => ({
+    register,
+  }), [register]);
 
   return (
-    <EscapeContext.Provider value={{ register }}>
+    <EscapeContext.Provider value={contextValue}>
       {children}
     </EscapeContext.Provider>
   );
-};
+}
 
 export const useEscape = (onEscape: Handler, active: boolean) => {
   const ctx = useContext(EscapeContext);
   useEffect(() => {
-    if (!ctx || !active) return;
+    if (!ctx || !active) return undefined;
     return ctx.register(onEscape);
   }, [ctx, onEscape, active]);
 };

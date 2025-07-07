@@ -7,5 +7,14 @@
     "label": "Settings",
     "language": "Language",
     "language-placeholder": "Language"
+  },
+  "player-info": {
+    "username": "Name",
+    "title": "Customize yourself!",
+    "continue": "Continue",
+    "goBack": "Go back"
+  },
+  "create-room": {
+    "title": "Create room"
   }
 }

@@ -1,4 +1,4 @@
-import React, { PropsWithChildren } from 'react'
+import React from 'react';
 
 export interface DialogContextType {
   open: boolean
@@ -7,9 +7,12 @@ export interface DialogContextType {
 
 export interface RootProps {
   children: React.ReactNode
+  open?: boolean
+  defaultOpen?: boolean
+  onOpenChange?: (open: boolean) => void
 }
 
-export type ContentProps = React.DialogHTMLAttributes<HTMLDialogElement>
+export type ContentProps = React.DialogHTMLAttributes<HTMLDialogElement>;
 
 export interface TitleProps {
   children: React.ReactNode
